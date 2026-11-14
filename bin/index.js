@@ -1,241 +1,106 @@
 #!/usr/bin/env node
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import picocolors from 'picocolors';
-import prompts from 'prompts';
-import figlet from 'figlet';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { parseArgs } from 'node:util';
 
-import {
-    patchApp,
-    restoreApp,
-    getAppAsarPath,
-    detectAppAsarPath,
-    hasAppBackup
-} from './patch-app.js';
-import {
-    patchIde,
-    restoreIde,
-    getIdeAppPath,
-    detectIdeAppPath,
-    resolveIdeAppDir,
-    hasIdeBackup
-} from './patch-ide.js';
+const root = fileURLToPath(new URL('../', import.meta.url));
+const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 
-import { exec } from 'child_process';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const { cyan, bold, blue, green, yellow } = picocolors;
-
-const pkgPath = path.join(__dirname, '..', 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-
-async function promptForStar() {
-    const width = 60;
-    const pad = (content, len) => content + ' '.repeat(Math.max(0, width - len));
-    const yellowCol = '\x1b[38;2;255;190;11m';
-    const goldCol = '\x1b[38;2;255;215;0m';
-    const cyanCol = '\x1b[38;2;56;189;248m';
-    const reset = '\x1b[0m';
-    const boldText = '\x1b[1m';
-    const dimText = '\x1b[2m';
-
-    const lines = [
-        pad(`  ${boldText}${goldCol}WAS XAIPRO RTL HELPFUL TO YOU?${reset}`, 37),
-        pad('', 0),
-        pad(`  ${dimText}If this tool made your workflow easier, visit xAiPro for${reset}`, 57),
-        pad(`  ${dimText}more Antigravity guides, tools and free downloads!${reset}`, 52),
-        pad('', 0),
-        pad(`  ${cyanCol}${boldText}Web:${reset} ${cyanCol}\x1b[4mhttps://xaipro.ir${reset}`, 53)
-    ];
-
-    console.log('\n  ' + yellowCol + '╭' + '─'.repeat(width) + '╮' + reset);
-    for (const line of lines) {
-        console.log('  ' + yellowCol + '│' + reset + line + yellowCol + '│' + reset);
+export function parseOptions(args) {
+    const { values, positionals } = parseArgs({ args, allowPositionals: true, options: {
+        app: { type: 'boolean' }, ide: { type: 'boolean' },
+        restore: { type: 'boolean', short: 'r' }, path: { type: 'string' },
+        check: { type: 'boolean' }, help: { type: 'boolean', short: 'h' },
+        version: { type: 'boolean', short: 'v' }
+    } });
+    if (positionals.length > 1 || (values.path && positionals.length)) {
+        throw new Error('Supply one installation path using --path or a positional argument.');
     }
-    console.log('  ' + yellowCol + '╰' + '─'.repeat(width) + '╯' + reset + '\n');
-
-    if (process.stdout.isTTY) {
-        try {
-            const { openRepo } = await prompts({
-                type: 'confirm',
-                name: 'openRepo',
-                message: 'Was xAiPro RTL helpful? Open https://xaipro.ir in your browser?',
-                initial: true
-            });
-            if (openRepo) {
-                const repoUrl = 'https://xaipro.ir';
-                const openCmd = process.platform === 'darwin' ? `open "${repoUrl}"` : process.platform === 'win32' ? `start "" "${repoUrl}"` : `xdg-open "${repoUrl}"`;
-                exec(openCmd);
-                console.log('\n  ' + green('✨ Thank you so much for your support! Enjoy RTL in Antigravity!\n'));
-            }
-        } catch (_) {}
+    values.path ??= positionals[0];
+    if (values.path !== undefined && (!values.path.trim() || values.path.startsWith('--'))) {
+        throw new Error('--path requires an installation directory or app.asar filename.');
     }
+    if (values.check && values.restore) throw new Error('Choose --check or --restore.');
+    if (values.path && values.app && values.ide) throw new Error('Choose one target for a custom path.');
+    return values;
 }
 
-function printBanner() {
-    try {
-        const fullArt = figlet.textSync('xAiPro RTL', { font: 'RubiFont' }).split('\n');
-        const hexColors = ['#3387FF', '#F25041', '#DFAC2A', '#91C45B'];
-        const colors = hexColors.map(hex => {
-            const bigint = parseInt(hex.replace('#', ''), 16);
-            return {
-                r: (bigint >> 16) & 255,
-                g: (bigint >> 8) & 255,
-                b: bigint & 255
-            };
-        });
+function help() {
+    console.log(`RTLAntigravity ${pkg.version}
+https://github.com/sinaojaghi
 
-        const applyGradient = (text) => {
-            let result = '';
-            const len = text.length;
-            for (let i = 0; i < len; i++) {
-                const char = text[i];
-                if (char === ' ' || char === '\n') {
-                    result += char;
-                    continue;
-                }
-                const factor = len > 1 ? i / (len - 1) : 0;
-                const segments = colors.length - 1;
-                const segmentFloat = factor * segments;
-                const segmentIdx = Math.min(Math.floor(segmentFloat), segments - 1);
-                const segmentFactor = segmentFloat - segmentIdx;
+Usage
+  node bin/index.js [options] [installation path]
 
-                const cStart = colors[segmentIdx];
-                const cEnd = colors[segmentIdx + 1];
+Options
+  --app             Target the standalone app
+  --ide             Target the IDE
+  --path <path>     Select an installation or app.asar explicitly
+  --check           Inspect detected installations without applying a patch
+  -r, --restore     Restore the original application files
+  -h, --help        Print this help
+  -v, --version     Print the package version
 
-                const r = Math.round(cStart.r + segmentFactor * (cEnd.r - cStart.r));
-                const g = Math.round(cStart.g + segmentFactor * (cEnd.g - cStart.g));
-                const b = Math.round(cStart.b + segmentFactor * (cEnd.b - cStart.b));
-
-                result += `\x1b[38;2;${r};${g};${b}m${char}\x1b[0m`;
-            }
-            return result;
-        };
-
-        console.log('');
-        for (const line of fullArt) {
-            if (!line.trim()) continue;
-            console.log(applyGradient(line));
-        }
-        console.log('');
-        console.log(`\x1b[2m  RTL & UI Patcher by xAiPro for Antigravity & Antigravity IDE | v${pkg.version}\x1b[0m\n`);
-    } catch (err) {
-        console.log(bold(cyan(`\n✨ xAiPro RTL Patcher v${pkg.version}\n`)));
-    }
+Without a target flag, both installed editions are processed.
+Close Antigravity completely before applying or restoring the patch.
+Local execution uses only the installed Node.js runtime.`);
 }
 
-printBanner();
-
-const args = process.argv.slice(2);
-
-if (args.includes('--help') || args.includes('-h')) {
-    console.log(`Usage:
-  node bin/index.js [options] [path]
-
-Options:
-  --ide              Patch or restore Antigravity IDE only (VS Code Edition)
-  --app              Patch or restore Antigravity Standalone App only
-  -r, --restore      Revert changes and restore original backup files
-  --path <dir/file>  Specify custom path to IDE directory or app.asar
-  -h, --help         Show this help message
-
-Default Behavior:
-  Running without --app or --ide will auto-detect installed applications:
-  • If both Antigravity and Antigravity IDE are found, both will be patched.
-  • If only one is found, that one will be patched.
-  • Running with --restore will restore all detected applications with backups.
-
-Examples:
-  node bin/index.js               # Auto-detect and patch both/available apps
-  node bin/index.js --ide         # Patch only Antigravity IDE
-  node bin/index.js --app         # Patch only Antigravity Standalone App
-  node bin/index.js --restore     # Restore all detected patched apps
-  node bin/index.js -r --ide      # Restore only Antigravity IDE
-`);
-    process.exit(0);
-}
-
-const isRestore = args.includes('--restore') || args.includes('-r');
-const forceIde = args.includes('--ide');
-const forceApp = args.includes('--app');
-
-// Find custom path argument if provided e.g. --path /foo/bar or last positional argument
-let customPath = null;
-const pathArgIdx = args.indexOf('--path');
-if (pathArgIdx !== -1 && args[pathArgIdx + 1]) {
-    customPath = args[pathArgIdx + 1];
-} else {
-    const nonFlags = args.filter(a => !a.startsWith('-'));
-    if (nonFlags.length > 0) {
-        customPath = nonFlags[0];
-    }
-}
-
-async function main() {
-    const [runApp, runIde, verb] = isRestore
-        ? [restoreApp, restoreIde, 'restore']
-        : [patchApp, patchIde, 'patch'];
-    let ok = false;
-
-    if (customPath) {
-        const ideDir = resolveIdeAppDir(customPath);
-        ok = (forceIde || ideDir) ? await runIde(ideDir || customPath) : await runApp(customPath);
-    } else if (forceApp && !forceIde) {
-        ok = await runApp(await getAppAsarPath());
-    } else if (forceIde && !forceApp) {
-        ok = await runIde(await getIdeAppPath());
-    } else {
-        const appPath = detectAppAsarPath();
-        const ideDir = detectIdeAppPath();
-
-        if (!appPath && !ideDir) {
-            console.log(yellow('⚠ Could not automatically locate Antigravity or Antigravity IDE.'));
-            const { target } = await prompts({
-                type: 'select',
-                name: 'target',
-                message: `Which application would you like to ${verb}?`,
-                choices: [
-                    { title: 'Antigravity IDE (VS Code Edition)', value: 'ide' },
-                    { title: 'Antigravity (Standalone App)', value: 'app' }
-                ],
-                initial: 0
-            });
-            if (!target) process.exit(0);
-            ok = target === 'ide' ? await runIde(await getIdeAppPath()) : await runApp(await getAppAsarPath());
+export async function main(args = process.argv.slice(2)) {
+    const options = parseOptions(args);
+    if (options.help) return help();
+    if (options.version) return console.log(pkg.version);
+    const [major, minor] = process.versions.node.split('.').map(Number);
+    if (major < 22 || (major === 22 && minor < 12)) throw new Error('Node.js 22.12 or newer is required. Download it from https://nodejs.org/');
+    const app = await import('./patch-app.js');
+    const ide = await import('./patch-ide.js');
+    const targets = [];
+    if (options.path) {
+        const customPath = path.resolve(options.path);
+        const idePath = ide.resolveIdeAppDir(customPath);
+        const appPath = app.resolveAppAsarPath(customPath);
+        if (options.ide || (!options.app && idePath)) {
+            if (!idePath) throw new Error(`Antigravity IDE was not found at ${customPath}`);
+            targets.push({ label: 'Antigravity IDE', path: idePath, api: ide, kind: 'Ide' });
         } else {
-            const targets = [
-                appPath && { name: 'Antigravity (Standalone App)', run: o => runApp(appPath, o), hasBackup: hasAppBackup(appPath) },
-                ideDir && { name: 'Antigravity IDE', run: o => runIde(ideDir, o), hasBackup: hasIdeBackup(ideDir) }
-            ].filter(t => t && (!isRestore || t.hasBackup));
-
-            if (targets.length === 0) {
-                console.log(yellow('⚠ No backup files found to restore for detected application(s).\n'));
-                return;
+            if (!appPath) throw new Error(`Antigravity app.asar was not found at ${customPath}`);
+            targets.push({ label: 'Antigravity App', path: appPath, api: app, kind: 'App' });
+        }
+    } else {
+        const both = options.app === options.ide;
+        const appPath = (both || options.app) && app.detectAppAsarPath();
+        const idePath = (both || options.ide) && ide.detectIdeAppPath();
+        if (appPath) targets.push({ label: 'Antigravity App', path: appPath, api: app, kind: 'App' });
+        if (idePath) targets.push({ label: 'Antigravity IDE', path: idePath, api: ide, kind: 'Ide' });
+    }
+    if (!targets.length) throw new Error('No matching Antigravity installation found. Use --path with its installation directory.');
+    console.log(`RTLAntigravity ${pkg.version} · https://github.com/sinaojaghi`);
+    if (!options.check) console.log('Antigravity must be fully closed while application files are updated.');
+    let failed = false;
+    for (const target of targets) {
+        console.log(`\n${target.label}\n${target.path}`);
+        try {
+            if (options.check) {
+                console.log(JSON.stringify(await target.api[`inspect${target.kind}`](target.path), null, 2));
+            } else {
+                const action = options.restore ? 'restore' : 'patch';
+                const result = await target.api[`${action}${target.kind}`](target.path);
+                if (result === false) throw new Error(`${action} did not complete.`);
+                console.log(options.restore ? 'Restore completed.' : 'Patch completed. Reopen Antigravity and use the RTL settings button.');
             }
-
-            const multi = targets.length > 1;
-            if (multi && !isRestore) {
-                console.log(bold(cyan('ℹ Found both Antigravity (Standalone App) and Antigravity IDE!')));
-                console.log(bold(cyan('  Patching both applications...\n')));
-            }
-            for (const [i, t] of targets.entries()) {
-                if (isRestore) console.log(blue(`ℹ Found backup for ${t.name}. Restoring...`));
-                else if (multi) console.log(bold(`${i ? '\n' : ''}--- ${i + 1}/2: ${t.name} ---`));
-                else console.log(blue(`ℹ Found ${t.name}. Patching...\n`));
-                if (await t.run({ exitOnError: !multi })) ok = true;
-            }
-            if (multi && ok && !isRestore) {
-                console.log(bold(green('\n✨ Done! Please restart your application(s) to enjoy RTL.\n')));
-            }
+        } catch (error) {
+            failed = true;
+            console.error(`${target.label}: ${error.message}`);
+            if (['EACCES', 'EPERM'].includes(error.code)) console.error('Close the app and retry. For a system installation, use an elevated terminal.');
         }
     }
-
-    if (ok && !isRestore) await promptForStar();
+    if (failed) process.exitCode = 1;
 }
 
-main().catch(e => {
-    console.error('\n✖ An unexpected error occurred:', e.message);
-    process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+    main().catch(error => {
+        console.error(`RTLAntigravity: ${error.message}`);
+        process.exitCode = 1;
+    });
+}

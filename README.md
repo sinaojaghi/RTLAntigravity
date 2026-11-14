@@ -1,210 +1,125 @@
-<h1 align="center">🔁 xAiPro RTL</h1>
-<p align="center">
-  <b>Smart Right-to-Left UI patcher for Antigravity &amp; Antigravity IDE, with Persian, Arabic and Hebrew typography support.</b>
-</p>
+# RTLAntigravity
 
-<p align="center">
-  <a href="https://microsoft.com/windows"><img src="https://img.shields.io/badge/OS-Windows-0078D6?style=flat-square" alt="OS - Windows"></a>
-  <a href="https://www.linux.org"><img src="https://img.shields.io/badge/OS-Linux-FCC624?style=flat-square&logo=linux&logoColor=white" alt="OS - Linux"></a>
-  <a href="https://www.apple.com/macos"><img src="https://img.shields.io/badge/OS-macOS-000000?style=flat-square&logo=apple&logoColor=white" alt="OS - macOS"></a>
-  <a href="https://xaipro.ir/antigravity-rtl"><img src="https://img.shields.io/badge/Node-22.12%2B-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 22.12+"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License - MIT"></a>
-</p>
+نمایش و تایپ فارسی، عربی و عبری با جهت مناسب و فونت دلخواه در **Antigravity App** و **Antigravity IDE**. نگهداری و توسعهٔ این نسخه توسط [sinaojaghi](https://github.com/sinaojaghi) انجام می‌شود.
 
-<p align="center">
-  <b><a href="https://xaipro.ir/antigravity-rtl">Persian / فارسی</a></b>
-</p>
+[English documentation](README.en.md)
 
----
+**اصل کد این نسخه از توزیع xAiPro گرفته شده است.** آن توزیع بر پایهٔ پروژهٔ `antigravity-rtl` نوشتهٔ mmnaderi و تحت مجوز MIT منتشر شده است. اعلان حق نشر اولیه در فایل مجوز آمده است. [منبع xAiPro](https://xaipro.ir/antigravity-rtl) · [پروژهٔ اولیه](https://github.com/mmnaderi/antigravity-rtl)
 
-## ✨ Features
+## امکانات
 
-Read and write naturally in Persian, Arabic and Hebrew — without disrupting English or code.
+- تشخیص جهت متن فارسی، عربی، عبری و انگلیسی در چت و کادر ورودی.
+- گزینهٔ Force RTL برای راست‌چین‌کردن متن گفتگو.
+- فونت آفلاین **Vazirmatn** و انتخاب جداگانهٔ فونت فارسی/عربی، انگلیسی و کد.
+- تنظیم اندازهٔ فونت و فاصلهٔ خطوط.
+- اصلاح `Shift+2` برای نوشتن `@` در ورودی فارسی.
+- میانبر `Alt+R` در ویندوز و لینوکس و `Option+R` در مک.
+- نصب، به‌روزرسانی پچ و بازگردانی فایل‌های برنامه با بررسی بکاپ.
 
-- **Dual target support:** Works on both **Antigravity (Standalone App)** and **Antigravity IDE (VS Code Edition)**, with smart auto-detection or interactive selection.
-- **Natural text direction:** Chat, input fields and agent views adapt dynamically as you type. **Force RTL** is available when you want everything right-aligned.
-- **Code &amp; terminal stay LTR:** Code blocks, the Monaco editor and the terminal remain left-to-right with customizable code fonts.
-- **Typography your way:** Separate fonts for Persian/Arabic, English and code. **Vazirmatn Variable** is embedded offline — no network needed. Font size and line height adjust live.
-- **Persian keyboard fix:** Maps `Shift + 2` to type `@` instead of `٬` on Persian keyboard layouts.
-- **Quick controls:** Title-bar menu in the Standalone App and a UI widget in the IDE, toggleable with `⌥R` on macOS or `Alt+R` on Windows and Linux.
+## پیش‌نیازها
 
-Settings are saved in `~/.antigravity-rtl.json` and restored when you reopen the app.
+۱. ویندوز، مک یا لینوکس و نسخهٔ سازگار Antigravity App یا IDE.
 
----
+۲. **Node.js نسخهٔ ۲۲.۱۲ یا جدیدتر** همراه npm. [دانلود رسمی Node.js](https://nodejs.org/en/download)
 
-## 🚀 Quick Start
+۳. دسترسی نوشتن در مسیر نصب برنامه. برای دریافت مستقیم از GitHub اینترنت لازم است.
 
-> **Before running the patch:** close Antigravity / Antigravity IDE completely.
+فونت وزیرمتن همراه ابزار است و پس از نصب به اینترنت نیاز ندارد. **قبل از نصب یا بازگردانی پچ، Antigravity را کامل ببندید.** در ویندوز اگر آیکن برنامه کنار ساعت فعال است، از منوی آن **Quit** را انتخاب کنید.
 
-### 1. Download and extract
+## اجرای یک‌دستوری از پوشهٔ پروژه
 
-Download [`antigravity-rtl.zip`](https://xaipro.ir/downloads/antigravity-rtl.zip) from the [xAiPro download page](https://xaipro.ir/antigravity-rtl), extract it, then enter the directory:
+پوشهٔ پروژه را دانلود یا clone کنید و ترمینال را در همان پوشه باز کنید. این دستور روی هر سه سیستم‌عامل یکسان است و با Node.js نصب‌شده، مستقیماً اجرا می‌شود.
 
-```bash
-cd antigravity-rtl
-```
-
-### 2. Install dependencies (one time)
-
-Node.js **22.12 or newer** is required.
-
-```bash
-npm install
-```
-
-### 3. Apply the patch
-
-Auto-detects and patches whichever Antigravity app is installed:
-
-```bash
+```sh
 node bin/index.js
 ```
 
-| Platform | Command |
-| :--- | :--- |
-| **macOS** | `node bin/index.js` — if you see *Permission Denied*, enable **App Management** for your terminal in **System Settings → Privacy &amp; Security → App Management**, then run it again. |
-| **Linux** | `node bin/index.js` — add `sudo` only when the app lives in a system directory (e.g. `/opt`). For user directories such as `~/Downloads`, no `sudo` is needed. |
-| **Windows** | Open PowerShell **as Administrator** and run `node bin/index.js`. |
+## اجرای مستقیم از GitHub
 
----
+این روش نسخهٔ ثبت‌شده در شاخهٔ `main` را دریافت می‌کند. برای استفاده از تغییرات این نسخه روی دستگاه‌های دیگر، ابتدا نگهدارنده باید آن‌ها را در GitHub منتشر کند. دریافت از آدرس آرشیو به نصب Git نیاز ندارد.
 
-## 🧰 CLI Options &amp; Flags
+در PowerShell یا CMD ویندوز اجرا کنید.
 
-| Command | Description |
-| :--- | :--- |
-| `node bin/index.js` | **Auto-detect &amp; patch:** patches both apps if found, or only the installed one |
-| `node bin/index.js --ide` | Patch **Antigravity IDE** only |
-| `node bin/index.js --app` | Patch the **Standalone App** only |
-| `node bin/index.js --restore` | Revert changes and restore original backups for all detected apps |
-| `node bin/index.js --restore --ide` | Restore **Antigravity IDE** only |
-| `node bin/index.js --restore --app` | Restore the **Standalone App** only |
-| `node bin/index.js --path "/path/to/app"` | Specify a custom installation directory or `app.asar` |
-| `node bin/index.js --help` | Show the built-in help |
-
----
-
-## ↩️ Uninstall / Revert the patch
-
-Quit the app(s) and run with `--restore` (or `-r`):
-
-```bash
-node bin/index.js --restore
+```powershell
+npx.cmd --yes --package=https://github.com/sinaojaghi/RTLAntigravity/archive/refs/heads/main.tar.gz antigravity-rtl
 ```
 
-To restore only one target:
+در ترمینال مک یا لینوکس اجرا کنید.
 
-```bash
-node bin/index.js --restore --ide
+```sh
+npx --yes --package=https://github.com/sinaojaghi/RTLAntigravity/archive/refs/heads/main.tar.gz antigravity-rtl
 ```
 
----
+## استفاده پس از نصب
 
-## 🔍 How it works
+۱. Antigravity را دوباره باز کنید.
 
-1. **Detection:** automatically locates your Antigravity `app.asar` or the Antigravity IDE `resources/app` directory.
-2. **Safe backup:** creates backups (`.bak` / `.rtl-bak`) before touching any file.
-3. **Smart injection:**
-   - **Standalone App:** injects the RTL engine into the core logic (`utils.js`) and repacks `app.asar`.
-   - **Antigravity IDE:** injects an isolated hook (`antigravity-rtl-main.js`) into `out/main.js`, targeting the workbench and agent windows.
-4. **Offline font:** embeds the Vazirmatn Variable font locally.
+۲. روی دکمهٔ **RTL** کلیک کنید. در IDE این کنترل در نوار وضعیت قرار می‌گیرد. در رابط‌هایی که نوار مورد انتظار موجود نیست، دکمهٔ شناور نمایش داده می‌شود.
 
----
+۳. تنظیم RTL را فعال کنید و در کادر چت بنویسید `سلام، این یک تست فارسی است.`
 
-## ❓ Troubleshooting
+۴. برای تنظیم فونت، اندازه یا فاصلهٔ خطوط از همان پنل استفاده کنید. خالی‌گذاشتن نام فونت فارسی/عربی، فونت وزیرمتن همراه ابزار را فعال می‌کند. نام فونت دلخواه باید روی سیستم نصب باشد.
 
-| Problem | Solution |
-| :--- | :--- |
-| `Could not automatically locate Antigravity` | The app is installed in a non-standard path — pass it with `--path`. |
-| `Permission denied` (macOS) | Enable **App Management** for your terminal in System Settings → Privacy &amp; Security. |
-| Patch applied but nothing changed | Fully quit and reopen the application. |
-| Layout looks broken after an app update | Antigravity updates overwrite the patch — run `node bin/index.js` again. |
-| Want the original back | `node bin/index.js --restore` |
+۵. برای تغییر سریع وضعیت RTL از `Alt+R` یا در مک از `Option+R` استفاده کنید.
 
----
+## دستورها
 
-## 📄 License
+| دستور | کاربرد |
+| --- | --- |
+| `node bin/index.js` | شناسایی و پچ نسخه‌های نصب‌شده |
+| `node bin/index.js --app` | پچ نسخهٔ مستقل |
+| `node bin/index.js --ide` | پچ نسخهٔ IDE |
+| `node bin/index.js --check` | بررسی نصب‌های شناسایی‌شده |
+| `node bin/index.js --path "مسیر نصب"` | انتخاب مسیر دلخواه |
+| `node bin/index.js --restore` | بازگردانی نسخه‌های شناسایی‌شده |
+| `node bin/index.js --restore --app` | بازگردانی نسخهٔ مستقل |
+| `node bin/index.js --restore --ide` | بازگردانی IDE |
+| `node bin/index.js --help` | نمایش راهنما |
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+در `--path` می‌توانید پوشهٔ نصب، بستهٔ `.app` در مک، پوشهٔ `resources/app` در IDE یا فایل `app.asar` نسخهٔ مستقل را بدهید. مسیرهای دارای فاصله را داخل کوتیشن قرار دهید.
 
-> Based on [`antigravity-rtl` by mmnaderi](https://github.com/mmnaderi/antigravity-rtl), released under the MIT License. Rebranded and distributed by [xAiPro](https://xaipro.ir).
+در روش `npx`، گزینه‌ها را بعد از `antigravity-rtl` بنویسید. گزینهٔ `--check` فایل‌های برنامه را برای بررسی می‌خواند. اجرای محلی ابزار به نصب بسته‌های npm نیاز ندارد.
 
----
----
+## تنظیمات، بکاپ و به‌روزرسانی
 
-## 🔁 xAiPro RTL (فارسی)
+تنظیمات در `~/.antigravity-rtl.json` ذخیره می‌شوند. در ویندوز، این فایل در پوشهٔ کاربر قرار می‌گیرد. دو نسخهٔ برنامه از همین فایل استفاده می‌کنند و تنظیمات معتبر نسخهٔ قبلی نیز خوانده می‌شوند.
 
-**پچ راست‌به‌چپ و تنظیمات تایپوگرافی برای Antigravity و Antigravity IDE، با پشتیبانی کامل فارسی، عربی و عبری.**
+بکاپ و اطلاعات بازگردانی در کنار فایل‌های نصب برنامه ذخیره می‌شوند. آن‌ها را برای اجرای `--restore` نگه دارید. ابزار پیش از بازگردانی فایل‌ها را بررسی می‌کند تا بکاپ نسخهٔ قدیمی روی برنامهٔ به‌روزشده نوشته نشود.
 
-با این ابزار می‌توانید در Antigravity فارسی بنویسید و بخوانید — **بدون** آنکه چیدمان متن انگلیسی و بلوک‌های کد به‌هم بخورد.
+پس از آپدیت Antigravity، دستور نصب پچ را دوباره اجرا کنید. اگر ساختار نصب یا فایل‌ها به شکل ناشناخته‌ای تغییر کرده باشند، پیام خطا مرحلهٔ لازم برای بازیابی را مشخص می‌کند.
 
-### امکانات
+## رفع مشکل
 
-- **پشتیبانی دوگانه:** هم نسخهٔ مستقل Antigravity و هم Antigravity IDE (مبتنی بر VS Code) با شناسایی خودکار یا انتخاب دستی.
-- **جهت‌دهی خودکار متن:** چیدمان چت، ورودی‌ها و پرامپت‌ها بر اساس زبان متن، راست‌چین یا چپ‌چین می‌شود.
-- **کد و ترمینال چپ‌چین می‌مانند:** بلوک‌های کد، ادیتور Monaco و ترمینال با فونت دلخواه LTR باقی می‌مانند.
-- **تایپوگرافی دلخواه:** فونت مجزا برای فارسی/عربی، انگلیسی و کد، همراه فونت توکار **وزیرمتن (Vazirmatn Variable)** بدون نیاز به اینترنت.
-- **حل مشکل کلید `@`:** اصلاح میانبر `Shift + 2` روی کیبورد فارسی برای تایپ مستقیم `@`.
-- **دسترسی سریع:** پنل تنظیمات در برنامه و کلید میانبر `⌥R` در مک یا `Alt+R` در ویندوز و لینوکس.
+| مشکل | اقدام |
+| --- | --- |
+| دستور `node` پیدا نمی‌شود | Node.js را نصب کنید و ترمینال را دوباره باز کنید |
+| نسخهٔ Node.js قدیمی است | نسخهٔ ۲۲.۱۲ یا جدیدتر نصب کنید |
+| دریافت وابستگی‌ها خطا دارد | اینترنت یا تنظیمات پراکسی npm را بررسی و دوباره اجرا کنید |
+| برنامه پیدا نمی‌شود | مسیر نصب را با `--path` مشخص کنید |
+| خطای دسترسی دریافت می‌کنید | برنامه را کامل ببندید و دوباره اجرا کنید. برای نصب سیستمی از ترمینال با دسترسی مدیر استفاده کنید |
+| مک اجازهٔ تغییر فایل‌ها را نمی‌دهد | در صورت نیاز، دسترسی App Management ترمینال را در تنظیمات Privacy & Security فعال کنید |
+| فایل برنامه قفل است | برنامه و پردازش کنار ساعت را ببندید و دوباره اجرا کنید |
+| دکمهٔ RTL نمایش داده نمی‌شود | برنامه را کامل بازگشایی و همان مسیر نصب را با `--check` بررسی کنید |
+| ساختار نسخه پشتیبانی نمی‌شود | متن خطا و نسخهٔ برنامه را در گزارش مشکل قرار دهید |
 
-تنظیمات در فایل `~/.antigravity-rtl.json` ذخیره می‌شود.
+## سازگاری و آزمون‌ها
 
-### آموزش نصب و اجرا
+سازگاری به ساختار فایل‌های نسخهٔ نصب‌شده وابسته است. پچ نسخهٔ مستقل به نقطهٔ بارگذاری پنجره در `dist/utils.js` نیاز دارد. نسخه‌هایی که بررسی یکپارچگی ASAR را اجباری کرده‌اند به پشتیبانی بسته‌بندی اختصاصی نیاز دارند. محدودیت‌های امضای برنامه و App Management در مک نیز ممکن است روی نصب اثر بگذارند. [توضیحات Electron دربارهٔ ASAR integrity](https://www.electronjs.org/docs/latest/tutorial/asar-integrity)
 
-> **قبل از اعمال پچ:** Antigravity یا Antigravity IDE را کاملاً ببندید.
+آزمون‌های پروژه نصب، اجرای مجدد، بازگردانی و به‌روزرسانی را روی نمونه‌های محلی برنامه و IDE بررسی می‌کنند. آرشیو نسخهٔ ویندوز **Antigravity 2.31.2** نیز برای بررسی سازگاری استفاده شده است. اجرای بومی مک و لینوکس و نسخه‌های دیگر Antigravity به آزمون مستقل نیاز دارند.
 
-**۱)** فایل [`antigravity-rtl.zip`](https://xaipro.ir/downloads/antigravity-rtl.zip) را از [صفحهٔ دانلود xAiPro](https://xaipro.ir/antigravity-rtl) دانلود و Extract کنید:
+برای اجرای آزمون‌ها از پوشهٔ پروژه استفاده کنید.
 
-```bash
-cd antigravity-rtl
+```sh
+npm ci
+npm test
+npm pack --dry-run
 ```
 
-**۲)** نصب وابستگی‌ها (فقط یک بار — نیاز به Node.js نسخهٔ ۲۲.۱۲ یا بالاتر):
+در گزارش مشکل، سیستم‌عامل، نسخهٔ Node.js، نسخهٔ Antigravity، دستور اجراشده و متن خطا را قرار دهید. [ثبت مشکل در GitHub](https://github.com/sinaojaghi/RTLAntigravity/issues)
 
-```bash
-npm install
-```
+## اعتباردهی و مجوز
 
-**۳)** اعمال پچ:
+کد آغازین این نسخه از xAiPro گرفته شده و آن پروژه بر پایهٔ `antigravity-rtl` از mmnaderi ساخته شده است. نگهدارندهٔ این fork، sinaojaghi است و لینک‌های رابط به پروفایل GitHub او اشاره دارند. [منبع xAiPro](https://xaipro.ir/antigravity-rtl) · [پروژهٔ اولیه](https://github.com/mmnaderi/antigravity-rtl) · [GitHub نگهدارنده](https://github.com/sinaojaghi)
 
-```bash
-node bin/index.js
-```
-
-- **مک:** اگر خطای Permission Denied گرفتید، تیک **App Management** را برای ترمینال در *System Settings → Privacy &amp; Security → App Management* فعال کنید و دوباره اجرا کنید.
-- **لینوکس:** اگر اپ در مسیر سیستمی مثل `/opt` هست `sudo` اضافه کنید؛ برای مسیرهای کاربر مثل `~/Downloads` نیازی نیست.
-- **ویندوز:** PowerShell را **Run as Administrator** باز کرده و اجرا کنید.
-
-### گزینه‌ها و فلگ‌ها
-
-| دستور | توضیحات |
-| :--- | :--- |
-| `node bin/index.js` | **تشخیص و پچ خودکار** هر اپ موجود |
-| `node bin/index.js --ide` | فقط پچ Antigravity IDE |
-| `node bin/index.js --app` | فقط پچ نسخهٔ مستقل |
-| `node bin/index.js --restore` | بازگردانی همه به حالت اولیه |
-| `node bin/index.js --restore --ide` | بازگردانی فقط Antigravity IDE |
-| `node bin/index.js --restore --app` | بازگردانی فقط نسخهٔ مستقل |
-| `node bin/index.js --path "/path/to/app"` | مشخص کردن مسیر دلخواه نصب |
-| `node bin/index.js --help` | نمایش راهنمای داخلی |
-
-### بازگردانی به حالت اولیه
-
-برنامه‌ها را ببندید و اجرا کنید:
-
-```bash
-node bin/index.js --restore
-```
-
-### عیب‌یابی
-
-| مشکل | راه‌حل |
-| :--- | :--- |
-| `Could not automatically locate Antigravity` | مسیر نصب غیراستاندارد است — با `--path` بدهید. |
-| `Permission denied` (مک) | App Management را برای ترمینال فعال کنید. |
-| پچ خورده ولی چیزی عوض نشده | برنامه را کامل ببندید و دوباره باز کنید. |
-| بعد از آپدیت به‌هم ریخت | آپدیت Antigravity پچ را بازنویسی می‌کند — دوباره `node bin/index.js` بزنید. |
-| می‌خواهید به حالت اول برگردد | `node bin/index.js --restore` |
-
----
-
-**اعتباردهی:** این پروژه بر اساس [`antigravity-rtl` از mmnaderi](https://github.com/mmnaderi/antigravity-rtl) با لایسنس MIT ساخته شده و توسط [xAiPro](https://xaipro.ir) بازانتشار یافته است.
+کد تحت [مجوز MIT](LICENSE) منتشر می‌شود و اعلان حق نشر اولیه همراه آن آمده است. فونت **Vazirmatn 33.003** با [مجوز SIL Open Font License 1.1](OFL-Vazirmatn.txt) توزیع می‌شود. [پروژهٔ وزیرمتن](https://github.com/rastikerdar/vazirmatn)
