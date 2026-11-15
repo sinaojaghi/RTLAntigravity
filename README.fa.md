@@ -1,6 +1,6 @@
 # RTLAntigravity
 
-نمایش و تایپ فارسی، عربی و چینی با جهت مناسب و فونت دلخواه در **Antigravity App** و **Antigravity IDE**. نگهداری و توسعهٔ این نسخه توسط [sinaojaghi](https://github.com/sinaojaghi) انجام می‌شود.
+نمایش و تایپ فارسی، عربی و چینی با جهت مناسب و فونت دلخواه در **Antigravity App**، **Antigravity IDE** و **Claude Web**. نگهداری و توسعهٔ این نسخه توسط [sinaojaghi](https://github.com/sinaojaghi) انجام می‌شود.
 
 [English documentation](README.md) · [简体中文](README.zh-CN.md)
 
@@ -16,7 +16,34 @@
 - میانبر `Alt+R` در ویندوز و لینوکس و `Option+R` در مک.
 - نصب، به‌روزرسانی پچ و بازگردانی فایل‌های برنامه با بررسی بکاپ.
 
-## پیش‌نیازها
+## چت Claude در مرورگر
+
+با Node.js نسخهٔ ۲۲.۱۲ یا جدیدتر، این دستور را در پوشهٔ پروژه اجرا کنید.
+
+```sh
+node bin/index.js --claude-web
+```
+
+۱. در Chrome آدرس `chrome://extensions` یا در Edge آدرس `edge://extensions` را باز کنید.
+
+۲. **Developer mode** را روشن کنید، **Load unpacked** را بزنید و پوشهٔ `claude-web-extension` را در پروژه انتخاب کنید. [راهنمای Chrome](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) · [راهنمای Edge](https://learn.microsoft.com/en-us/microsoft-edge/extensions/getting-started/extension-sideloading)
+
+۳. تب Claude را تازه‌سازی کنید، یک چت باز کنید و برای تنظیم جهت، فونت و فاصلهٔ خطوط از دکمهٔ **RTL** استفاده کنید. [Claude Web](https://claude.ai/)
+
+افزونه جهت پیام‌ها و کادر نوشتن را خودکار تشخیص می‌دهد. وزیرمتن همراه افزونه است و برای متن چینی از فونت‌های سیستم استفاده می‌شود. تنظیمات در مرورگر ذخیره می‌شوند و دسترسی افزونه به `https://claude.ai/*` محدود است. این روش برای چت وب است. Claude Desktop و Claude Code در ترمینال رابط‌های جداگانه دارند.
+
+برای تعیین محل ساخت، `--path "مسیر پوشهٔ خروجی"` را اضافه کنید. برای به‌روزرسانی، افزونه را دوباره در همان پوشه بسازید و افزونه و تب Claude را تازه‌سازی کنید. برای حذف هم از صفحهٔ افزونه‌های مرورگر استفاده کنید و سپس تب Claude را تازه‌سازی کنید.
+
+## نمایش پاسخ فارسی در Claude Desktop
+
+در نسخهٔ نصب‌شده می‌توانید پاسخ فارسی را در پنل کنار گفتگو راست‌چین بخوانید.
+
+- **Chat.** از Claude بخواهید پاسخ را در قالب یک HTML Artifact با `<html lang="fa" dir="rtl">` کنار گفتگو نمایش دهد. برای Artifact باید گزینهٔ **Create and edit files** در **Settings → Capabilities** فعال باشد. نام این گزینه در تنظیمات قدیمی **Cloud code execution and file creation** است. [راهنمای Artifacts](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them)
+- **Code.** در یک جلسهٔ محلی از Claude بخواهید پاسخ را در یک فایل HTML با `<html lang="fa" dir="rtl">` ذخیره کند و مسیر فایل را در گفتگو بنویسد. روی مسیر فایل کلیک کنید تا در پنل **Browser** خود برنامه باز شود. [راهنمای پیش‌نمایش Code](https://code.claude.com/docs/en/desktop#preview-your-app)
+
+در هر دو تب، در درخواستتان بنویسید «پاراگراف‌های فارسی را راست‌چین کن. جهت عناصر `pre` و `code` را چپ‌به‌راست بگذار و عبارت‌های انگلیسی و دستورهای داخل جمله را با `<bdi dir="ltr">` از متن فارسی جدا کن.» این جهت‌بندی روی پاسخِ داخل پنل اعمال می‌شود.
+
+## پیش‌نیازهای Antigravity
 
 ۱. ویندوز، مک یا لینوکس و نسخهٔ سازگار Antigravity App یا IDE.
 

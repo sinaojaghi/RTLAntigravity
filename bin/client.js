@@ -6,13 +6,18 @@ function installRTLAntigravity(options) {
         let savedState = { ...state };
         const tracked = new Map();
         const marker = 'data-antigravity-rtl-text';
-        const protectedSelector = 'pre, code, .monaco-editor, .monaco-diff-editor, .terminal, .terminal-wrapper, .xterm, .codicon, [class*="codicon-"], .google-symbols, [contenteditable="false"]';
+        const protectedSelector = 'pre, code, .monaco-editor, .monaco-diff-editor, .terminal, .terminal-wrapper, .xterm, .codicon, [class*="codicon-"], .google-symbols, [contenteditable="false"]' +
+            (options.protectedSelector ? `, ${options.protectedSelector}` : '');
         const ownUI = '#antigravity-rtl-settings-panel, #antigravity-rtl-statusbar-btn';
-        const inputSelector = '[contenteditable="true"], [contenteditable="true"] p, textarea[data-testid="ask-question-writein"], textarea[aria-label="Message input"]';
-        const outputSelector = '.prose > *, .prose :is(p, li, h1, h2, h3, h4, h5, h6), .markdown-body > *, .markdown-body :is(p, li, h1, h2, h3, h4, h5, h6), .rendered-markdown > *, .leading-relaxed > *, [data-testid="chat-message"] > *, [data-testid="conversation-view"] p, [data-testid="conversation-view"] li, [data-testid="conversation-view"] h1, [data-testid="conversation-view"] h2, [data-testid="conversation-view"] h3, [data-testid="user-input-step"], label[for^="ask-opt-"]';
-        const rtlStyle = document.createElement('style');
-        rtlStyle.id = 'antigravity-rtl-style';
-        document.head.appendChild(rtlStyle);
+        const inputSelector = options.inputSelector ?? '[contenteditable="true"], [contenteditable="true"] p, textarea[data-testid="ask-question-writein"], textarea[aria-label="Message input"]';
+        const outputSelector = options.outputSelector ?? '.prose > *, .prose :is(p, li, h1, h2, h3, h4, h5, h6), .markdown-body > *, .markdown-body :is(p, li, h1, h2, h3, h4, h5, h6), .rendered-markdown > *, .leading-relaxed > *, [data-testid="chat-message"] > *, [data-testid="conversation-view"] p, [data-testid="conversation-view"] li, [data-testid="conversation-view"] h1, [data-testid="conversation-view"] h2, [data-testid="conversation-view"] h3, [data-testid="user-input-step"], label[for^="ask-opt-"]';
+        let applyStyles = options.applyStyles;
+        if (!applyStyles) {
+            const rtlStyle = document.createElement('style');
+            rtlStyle.id = 'antigravity-rtl-style';
+            document.head.appendChild(rtlStyle);
+            applyStyles = styles => { rtlStyle.textContent = styles; };
+        }
 
         // A quoted CSS string protects font names containing quotes, slashes or line breaks.
         function cssString(value) {
@@ -21,25 +26,25 @@ function installRTLAntigravity(options) {
 
         function updateDynamicCSS() {
             if (!state.isRTL) {
-                rtlStyle.textContent = '';
+                applyStyles('');
                 return;
             }
             const faFont = state.faFont ? '"RTLAntigravity Custom Persian", ' : '';
             const enFont = state.enFont ? `${cssString(state.enFont)}, ` : '';
             const codeFont = state.codeFont ? `font-family: ${cssString(state.codeFont)}, ui-monospace, monospace !important;` : '';
             const fontStack = `${faFont}"RTLAntigravity Persian", ${enFont}system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK TC", sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`;
-            rtlStyle.textContent = `
+            applyStyles(`
                 ${state.faFont ? `@font-face {
                     font-family: "RTLAntigravity Custom Persian";
                     src: local(${cssString(state.faFont)});
                     unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
                 }` : ''}
-                @font-face {
+                ${options.fontBase64 ? `@font-face {
                     font-family: "RTLAntigravity Persian";
                     src: url("data:font/woff2;base64,${options.fontBase64}") format("woff2");
                     font-weight: 100 900;
                     unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
-                }
+                }` : ''}
                 [${marker}] {
                     font-family: ${fontStack} !important;
                     line-height: ${state.lh} !important;
@@ -68,7 +73,7 @@ function installRTLAntigravity(options) {
                 }
                 [${marker}] .codicon, [${marker}] [class*="codicon-"] { font-family: codicon !important; }
                 [${marker}] .google-symbols { font-family: "Google Symbols" !important; }
-            `;
+            `);
         }
 
         function restoreElement(element, previous) {
@@ -118,7 +123,8 @@ function installRTLAntigravity(options) {
                 if (state[key] !== savedState[key]) changes[key] = state[key];
             }
             if (Object.keys(changes).length) {
-                console.log(options.savePrefix + JSON.stringify(changes));
+                if (options.saveConfig) options.saveConfig(changes);
+                else console.log(options.savePrefix + JSON.stringify(changes));
                 savedState = { ...state };
             }
         }
@@ -421,6 +427,7 @@ function installRTLAntigravity(options) {
             if (event.code !== 'Digit2' || !event.shiftKey || !['٬', '،'].includes(event.key)) return;
             const input = event.target;
             if (!input || input.closest?.(protectedSelector + ', ' + ownUI)) return;
+            if (options.kind === 'claude-web' && !input.closest?.(inputSelector)) return;
             const plainInput = input.matches?.('textarea, input[type="text"], input[type="search"], input:not([type])');
             if ((!plainInput && !input.isContentEditable) || input.readOnly || input.disabled) return;
             event.preventDefault();

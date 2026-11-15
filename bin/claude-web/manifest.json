@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "RTLAntigravity for Claude Web",
+  "version": "1.0.0",
+  "description": "Persian and Arabic text direction and fonts for Claude web chat.",
+  "homepage_url": "https://github.com/sinaojaghi/RTLAntigravity",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

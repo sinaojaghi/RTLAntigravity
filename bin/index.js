@@ -9,7 +9,7 @@ const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
 
 export function parseOptions(args) {
     const { values, positionals } = parseArgs({ args, allowPositionals: true, options: {
-        app: { type: 'boolean' }, ide: { type: 'boolean' },
+        app: { type: 'boolean' }, ide: { type: 'boolean' }, 'claude-web': { type: 'boolean' },
         restore: { type: 'boolean', short: 'r' }, path: { type: 'string' },
         check: { type: 'boolean' }, help: { type: 'boolean', short: 'h' },
         version: { type: 'boolean', short: 'v' }
@@ -23,6 +23,9 @@ export function parseOptions(args) {
     }
     if (values.check && values.restore) throw new Error('Choose --check or --restore.');
     if (values.path && values.app && values.ide) throw new Error('Choose one target for a custom path.');
+    if (values['claude-web'] && (values.app || values.ide || values.check || values.restore)) {
+        throw new Error('--claude-web builds a browser extension and must be used separately from the Antigravity options.');
+    }
     return values;
 }
 
@@ -36,7 +39,8 @@ Usage
 Options
   --app             Target the standalone app
   --ide             Target the IDE
-  --path <path>     Select an installation or app.asar explicitly
+  --claude-web      Build the unpacked Chrome or Edge extension for claude.ai
+  --path <path>     Select an Antigravity installation or the Claude Web output folder
   --check           Inspect detected installations without applying a patch
   -r, --restore     Restore the original application files
   -h, --help        Print this help
@@ -44,6 +48,7 @@ Options
 
 Without a target flag, both installed editions are processed.
 Close Antigravity completely before applying or restoring the patch.
+--claude-web writes claude-web-extension in the current directory by default.
 Local execution uses only the installed Node.js runtime.`);
 }
 
@@ -53,6 +58,13 @@ export async function main(args = process.argv.slice(2)) {
     if (options.version) return console.log(pkg.version);
     const [major, minor] = process.versions.node.split('.').map(Number);
     if (major < 22 || (major === 22 && minor < 12)) throw new Error('Node.js 22.12 or newer is required. Download it from https://nodejs.org/');
+    if (options['claude-web']) {
+        const { buildClaudeWeb } = await import('./build-claude-web.js');
+        const destination = buildClaudeWeb(options.path ?? 'claude-web-extension');
+        console.log(`Claude Web extension ready at ${destination}`);
+        console.log('Open chrome://extensions or edge://extensions. Enable Developer mode and select Load unpacked, then choose this folder.');
+        return;
+    }
     const app = await import('./patch-app.js');
     const ide = await import('./patch-ide.js');
     const targets = [];

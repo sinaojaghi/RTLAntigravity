@@ -6,3 +6,4 @@ unpatch.js
 *.tgz
 .npm-cache/
 coverage/
+claude-web-extension/

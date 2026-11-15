@@ -1,12 +1,37 @@
 # RTLAntigravity
 
-Persian, Arabic and Chinese text direction and typography for Antigravity App and IDE. Maintained by [sinaojaghi](https://github.com/sinaojaghi).
+Persian, Arabic and Chinese text direction and typography for Antigravity App, Antigravity IDE and Claude Web. Maintained by [sinaojaghi](https://github.com/sinaojaghi).
 
 [راهنمای فارسی](README.fa.md) · [简体中文](README.zh-CN.md)
 
 This fork is based on the code distributed by xAiPro. That distribution credits the MIT-licensed `antigravity-rtl` project by mmnaderi. Original copyright notices are included in `LICENSE`. [xAiPro distribution](https://xaipro.ir/antigravity-rtl) · [Upstream](https://github.com/mmnaderi/antigravity-rtl)
 
-## Requirements
+## Claude Web
+
+From the project folder, build the browser extension with Node.js 22.12 or newer.
+
+```sh
+node bin/index.js --claude-web
+```
+
+1. Open `chrome://extensions` in Chrome or `edge://extensions` in Edge.
+2. Enable **Developer mode**, select **Load unpacked**, and choose `claude-web-extension` from the project folder. [Chrome instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) · [Edge instructions](https://learn.microsoft.com/en-us/microsoft-edge/extensions/getting-started/extension-sideloading)
+3. Refresh your Claude tab and open a chat. Use **RTL** to adjust direction, fonts and line height. [Claude Web](https://claude.ai/)
+
+The extension applies automatic direction to messages and the composer. It bundles Vazirmatn for Persian and Arabic, uses system font fallbacks for Chinese, and saves preferences in the browser. Its site access is limited to `https://claude.ai/*`. It covers browser chats. Claude Desktop and the Claude Code terminal use separate interfaces.
+
+To export elsewhere, add `--path "output folder"`. To update, build into the same folder and reload the extension and the Claude tab. To remove it, use the browser's extensions page and refresh the tab.
+
+## Claude Desktop
+
+You can display Persian responses right-to-left in a preview inside the installed app.
+
+- **Chat.** Ask Claude to create an HTML artifact with `<html lang="fa" dir="rtl">` and show it beside the conversation. Artifacts require **Create and edit files** in **Settings → Capabilities**. The older settings layout calls this **Cloud code execution and file creation**. [Claude artifacts](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them)
+- **Code.** In a local Code session, ask Claude to save the response as an HTML file with `<html lang="fa" dir="rtl">` and include the file path in its reply. Click the HTML path in the chat to open the **Browser** pane. [Claude Code Desktop preview](https://code.claude.com/docs/en/desktop#preview-your-app)
+
+In either tab, ask for right-aligned Persian paragraphs and left-to-right `pre` and `code` elements. Ask Claude to keep inline English terms and commands together using `<bdi dir="ltr">`. The preview applies these directions to the generated response.
+
+## Antigravity requirements
 
 - Windows, macOS or Linux with a compatible Antigravity App or IDE installation.
 - Node.js 22.12 or newer, including npm. [Download Node.js](https://nodejs.org/en/download)

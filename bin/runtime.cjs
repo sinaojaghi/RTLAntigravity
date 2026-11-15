@@ -123,4 +123,4 @@ function attach(contents, options = {}) {
     });
 }
 
-module.exports = { attach, sanitizeConfig, isTrustedURL, readConfig, saveConfig, consoleDetails };
+module.exports = { attach, defaults, sanitizeConfig, isTrustedURL, readConfig, saveConfig, consoleDetails };

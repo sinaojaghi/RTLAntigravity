@@ -1,12 +1,37 @@
 # RTLAntigravity
 
-为 **Antigravity App** 和 **Antigravity IDE** 提供波斯文、阿拉伯文、中文和英文的文字方向与字体设置。默认界面和主文档使用英文。本版本由 sinaojaghi 维护。[维护者](https://github.com/sinaojaghi)
+为 **Antigravity App**、**Antigravity IDE** 和 **Claude Web** 提供波斯文、阿拉伯文、中文和英文的文字方向与字体设置。默认界面和主文档使用英文。本版本由 sinaojaghi 维护。[维护者](https://github.com/sinaojaghi)
 
 [English](README.md) · [راهنمای فارسی](README.fa.md)
 
 本项目基于 xAiPro 分发的代码，该版本源自 mmnaderi 的 MIT 开源项目 `antigravity-rtl`。原始版权声明保存在 `LICENSE` 中。[xAiPro 原始分发](https://xaipro.ir/antigravity-rtl) · [上游项目](https://github.com/mmnaderi/antigravity-rtl)
 
-## 安装前准备
+## Claude 网页聊天
+
+使用 Node.js 22.12 或更新版本，在项目目录运行以下命令。
+
+```sh
+node bin/index.js --claude-web
+```
+
+1. 在 Chrome 打开 `chrome://extensions`，或在 Edge 打开 `edge://extensions`。
+2. 启用开发者模式，点击 **Load unpacked**（加载解压缩的扩展），选择项目中的 `claude-web-extension` 文件夹。[Chrome 指南](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) · [Edge 指南](https://learn.microsoft.com/en-us/microsoft-edge/extensions/getting-started/extension-sideloading)
+3. 刷新 Claude 标签页并打开聊天。通过 **RTL** 按钮调整文字方向、字体和行高。[Claude Web](https://claude.ai/)
+
+扩展自动调整聊天消息和输入框的文字方向。波斯文和阿拉伯文可使用内置 Vazirmatn，中文使用系统字体。设置保存在浏览器中，扩展仅在 `https://claude.ai/*` 运行。Claude Desktop 和 Claude Code 终端使用独立的界面。
+
+如需更改导出位置，请添加 `--path "输出文件夹"`。更新时在同一目录重新生成扩展，然后重新加载扩展和 Claude 标签页。
+
+## 在 Claude Desktop 中阅读波斯语回复
+
+可以在桌面应用的预览面板中从右到左阅读波斯语回复。
+
+- **Chat。** 请 Claude 将回复制作成使用 `<html lang="fa" dir="rtl">` 的 HTML Artifact，并在对话旁打开。需要在 **Settings → Capabilities** 中开启 **Create and edit files**。旧版设置中的名称是 **Cloud code execution and file creation**。[Artifact 指南](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them)
+- **Code。** 在本地会话中，请 Claude 将回复保存为使用 `<html lang="fa" dir="rtl">` 的 HTML 文件，并在回复中提供文件路径。点击该路径，即可在 **Browser** 面板中打开。[Claude Code 桌面预览指南](https://code.claude.com/docs/en/desktop#preview-your-app)
+
+请 Claude 将波斯语段落右对齐，使 `pre` 和 `code` 元素从左到右显示，并使用 `<bdi dir="ltr">` 隔离句中的英文术语和命令。这些方向设置应用于预览面板中的回复。
+
+## Antigravity 安装前准备
 
 - Windows、macOS 或 Linux，以及受支持的 Antigravity App 或 IDE 安装。
 - Node.js **22.12 或更新版本**，包含 npm。[下载 Node.js](https://nodejs.org/en/download)
