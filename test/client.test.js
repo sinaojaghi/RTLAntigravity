@@ -19,13 +19,13 @@ function page(t, html, changes = {}, kind = 'app') {
     return { window: dom.window, doc, messages, byId: id => doc.getElementById(id) };
 }
 
-test('uses first letter for Persian, Arabic, Hebrew and mixed text without touching code', t => {
+test('uses first letter for Persian, Arabic and mixed text without touching code', t => {
     const { byId } = page(t, `<div class="prose">
-        <p id="fa">۱۲۳ سلام دنیا</p><p id="he">שלום עולם</p><p id="ar">مرحبا بالعالم</p>
+        <p id="fa">۱۲۳ سلام دنیا</p><p id="ar">مرحبا بالعالم</p>
         <p id="en">Hello سلام</p><p id="empty">123 !?</p><p id="greek">Ελληνικά فارسی</p>
         <pre><code id="code">فارسی</code></pre><div class="monaco-editor"><p id="editor">سلام</p></div>
         <div><p id="nested">فارسی</p></div></div><div contenteditable="true" id="input">سلام</div>`);
-    for (const id of ['fa', 'he', 'ar', 'nested', 'input']) assert.equal(byId(id).getAttribute('dir'), 'rtl', id);
+    for (const id of ['fa', 'ar', 'nested', 'input']) assert.equal(byId(id).getAttribute('dir'), 'rtl', id);
     for (const id of ['en', 'greek']) assert.equal(byId(id).getAttribute('dir'), 'ltr', id);
     assert.equal(byId('empty').getAttribute('dir'), 'auto');
     assert.equal(byId('code').hasAttribute('data-antigravity-rtl-text'), false);
@@ -36,11 +36,38 @@ test('tracks streaming character updates and newly inserted paragraphs', async t
     const { byId, doc } = page(t, '<div class="prose" id="chat"><p id="stream">Loading</p></div>');
     byId('stream').firstChild.data = 'پاسخ فارسی';
     const paragraph = doc.createElement('p');
-    paragraph.textContent = 'שלום';
+    paragraph.textContent = 'مرحبا';
     byId('chat').append(paragraph);
     await delay(180);
     assert.equal(byId('stream').getAttribute('dir'), 'rtl');
     assert.equal(paragraph.getAttribute('dir'), 'rtl');
+});
+
+test('Chinese and mixed-script paragraphs and inputs use their first letter', async t => {
+    const { byId, doc, window, messages } = page(t, `<div class="prose">
+        <p id="simplified">你好，世界</p><p id="traditional">歡迎使用</p>
+        <p id="mixed">中文 سلام</p><p id="persian-first">سلام 中文</p>
+        <p id="numbered">１２３ 你好</p><pre><code id="code">const 文本 = "你好";</code></pre>
+        </div><div contenteditable="true" id="input">你好</div>`);
+    for (const id of ['simplified', 'traditional', 'mixed', 'numbered', 'input']) {
+        assert.equal(byId(id).getAttribute('dir'), 'ltr', id);
+    }
+    assert.equal(byId('persian-first').getAttribute('dir'), 'rtl');
+    assert.equal(byId('code').hasAttribute('data-antigravity-rtl-text'), false);
+    byId('simplified').firstChild.data = 'سلام 中文';
+    await delay(180);
+    assert.equal(byId('simplified').getAttribute('dir'), 'rtl');
+    byId('antigravity-rtl-statusbar-btn').click();
+    const font = byId('rtl-panel-en-font');
+    assert.equal(font.getAttribute('aria-label'), 'English and Chinese font');
+    font.value = 'Microsoft YaHei';
+    font.dispatchEvent(new window.Event('input', { bubbles: true }));
+    assert.deepEqual(messages, ['test|{"enFont":"Microsoft YaHei"}']);
+    const css = byId('antigravity-rtl-style').textContent;
+    assert.ok(css.includes('"Microsoft YaHei"'));
+    assert.ok(css.includes('"PingFang SC"'));
+    assert.ok(css.includes('"Noto Sans CJK SC"'));
+    assert.equal(doc.getElementById('rtl-panel-master-btn').getAttribute('aria-checked'), 'true');
 });
 
 test('disabling RTL restores owned attributes and respects app changes', t => {

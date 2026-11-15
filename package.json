@@ -1,7 +1,7 @@
 {
   "name": "@sinaojaghi/antigravity-rtl",
   "version": "2.0.0",
-  "description": "Persian, Arabic and Hebrew text direction and typography for Antigravity App and IDE.",
+  "description": "Persian, Arabic and Chinese text direction and typography for Antigravity App and IDE.",
   "type": "module",
   "main": "./bin/index.js",
   "bin": {
@@ -21,7 +21,7 @@
     "rtl",
     "persian",
     "arabic",
-    "hebrew",
+    "chinese",
     "electron"
   ],
   "author": "sinaojaghi (https://github.com/sinaojaghi)",
@@ -29,7 +29,8 @@
   "files": [
     "bin",
     "README.md",
-    "README.en.md",
+    "README.fa.md",
+    "README.zh-CN.md",
     "LICENSE",
     "OFL-Vazirmatn.txt"
   ],

@@ -27,7 +27,7 @@ function installRTLAntigravity(options) {
             const faFont = state.faFont ? '"RTLAntigravity Custom Persian", ' : '';
             const enFont = state.enFont ? `${cssString(state.enFont)}, ` : '';
             const codeFont = state.codeFont ? `font-family: ${cssString(state.codeFont)}, ui-monospace, monospace !important;` : '';
-            const fontStack = `${faFont}"RTLAntigravity Persian", ${enFont}system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`;
+            const fontStack = `${faFont}"RTLAntigravity Persian", ${enFont}system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK TC", sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`;
             rtlStyle.textContent = `
                 ${state.faFont ? `@font-face {
                     font-family: "RTLAntigravity Custom Persian";
@@ -83,7 +83,7 @@ function installRTLAntigravity(options) {
         function textDirection(text) {
             const firstLetter = text.match(/\p{Letter}/u)?.[0];
             if (!firstLetter) return 'auto';
-            return /[\p{Script=Arabic}\p{Script=Hebrew}]/u.test(firstLetter) ? 'rtl' : 'ltr';
+            return /\p{Script=Arabic}/u.test(firstLetter) ? 'rtl' : 'ltr';
         }
 
         function updateDir() {
@@ -213,9 +213,9 @@ function installRTLAntigravity(options) {
             ]));
 
             // EN Font
-            const enInput = el('input', inputStyle, null, { id: 'rtl-panel-en-font', ariaLabel: 'English font', type: 'text', placeholder: 'Default: System', value: state.enFont });
+            const enInput = el('input', inputStyle, null, { id: 'rtl-panel-en-font', ariaLabel: 'English and Chinese font', type: 'text', placeholder: 'Default: System', value: state.enFont });
             panelBody.appendChild(el('div', 'display:flex;align-items:center;justify-content:space-between;gap:8px;', [
-                el('span', 'font-size:11px;white-space:nowrap;', 'EN Font', { title: 'English UI Font' }),
+                el('span', 'font-size:11px;white-space:nowrap;', 'EN/ZH Font', { title: 'English and Chinese UI Font' }),
                 enInput
             ]));
 
